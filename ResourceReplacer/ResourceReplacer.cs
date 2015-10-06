@@ -6,24 +6,24 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace TextureReplacer
+namespace ResourceReplacer
 {
-    public class TextureReplacer : Singleton<TextureReplacer>
+    public class ResourceReplacer : Singleton<ResourceReplacer>
     {
-        private const string TEXTURE_PACK_PATH = "TexturePack.xml";
+        private const string RESOURCE_PACK_PATH = "ResourcePack.xml";
         private const string TEXTURE_EXTENSION = ".png";
         private static readonly string BUILDINGS_TEXTURE_DIR = Path.Combine("textures", "buildings");
         private static readonly string[] PROPERTY_NAMES = { "_MainTex", "_XYSMap", "_ACIMap" };
 
         private TextureManager textureManager;
 
-        // Texture packs
+        // Resource packs
         private readonly List<String> textureDirectories = new List<string>();
-        private TexturePack mergedTexturePack;
+        private ResourcePack mergedResourcePack;
 
         public void OnCreated()
         {
-            SearchTexturePacks();
+            SearchResourcePacks();
             if(textureManager == null) textureManager = gameObject.AddComponent<TextureManager>();
         }
 
@@ -49,11 +49,11 @@ namespace TextureReplacer
             if (prefab.m_lodObject != null) ReplaceTextures(prefab.m_lodObject.GetComponent<Renderer>());
 
             // color variations
-            var colorConfig = mergedTexturePack.GetBuilding(prefab.name);
+            var colorConfig = mergedResourcePack.GetBuilding(prefab.name);
             if (colorConfig != null) ReplaceColorVariations(prefab, colorConfig);
         }
 
-        private void ReplaceColorVariations(BuildingInfo prefab, TexturePack.Prefab colorConfig)
+        private void ReplaceColorVariations(BuildingInfo prefab, ResourcePack.Prefab colorConfig)
         {
             var renderer = prefab.GetComponent<Renderer>();
             if (renderer == null) return;
@@ -122,9 +122,9 @@ namespace TextureReplacer
             }
         }
 
-        private void SearchTexturePacks()
+        private void SearchResourcePacks()
         {
-            mergedTexturePack = new TexturePack("<merged>");
+            mergedResourcePack = new ResourcePack("<merged>");
             textureDirectories.Clear();
 
             // user texture directory (SteamApps\common\Cities_Skylines\textures\)
@@ -134,15 +134,15 @@ namespace TextureReplacer
             {
                 try
                 {
-                    var texturePack = TexturePack.Deserialize(Path.Combine(pluginInfo.modPath, TEXTURE_PACK_PATH));
-                    if (texturePack != null)
+                    var resourcePack = ResourcePack.Deserialize(Path.Combine(pluginInfo.modPath, RESOURCE_PACK_PATH));
+                    if (resourcePack != null)
                     {
-                        mergedTexturePack.Merge(texturePack);
+                        mergedResourcePack.Merge(resourcePack);
                     }
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("Error while parsing TexturePack.xml of mod " + pluginInfo.name);
+                    Debug.LogError("Error while parsing " + RESOURCE_PACK_PATH + " of mod " + pluginInfo.name);
                     Debug.LogException(e);
                 }
 

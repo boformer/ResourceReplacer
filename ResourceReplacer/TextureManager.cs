@@ -2,11 +2,11 @@
 using System.IO;
 using UnityEngine;
 
-namespace TextureReplacer
+namespace ResourceReplacer
 {
     public class TextureManager : MonoBehaviour
     {
-        public const string MOD_TEXTURE_PREFIX = "TextureReplacer_";
+        public const string MOD_TEXTURE_PREFIX = "ResourceReplacer_";
 
         private readonly HashSet<Texture> unusedTextures = new HashSet<Texture>();
 

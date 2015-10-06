@@ -7,7 +7,7 @@
     <ProjectGuid>{9D5E9589-E007-4D79-8E6B-7C24253E3A57}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TextureReplacer</RootNamespace>
+    <RootNamespace>ResourceReplacer</RootNamespace>
     <AssemblyName>TextureReplacer</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -55,9 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TextureManager.cs" />
-    <Compile Include="TexturePack.cs" />
-    <Compile Include="TextureReplacer.cs" />
-    <Compile Include="TextureReplacerMod.cs" />
+    <Compile Include="ResourcePack.cs" />
+    <Compile Include="ResourceReplacer.cs" />
+    <Compile Include="ResourceReplacerMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

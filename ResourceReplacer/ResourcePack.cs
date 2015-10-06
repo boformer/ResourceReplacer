@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml.Serialization;
 using UnityEngine;
-namespace TextureReplacer
+namespace ResourceReplacer
 {
-    public class TexturePack
+    public class ResourcePack
     {
         [XmlAttribute]
         public string Name { get; set; }
@@ -19,11 +19,11 @@ namespace TextureReplacer
             set { _buildings = value; }
         }
 
-        public TexturePack(string name)
+        public ResourcePack(string name)
         {
             Name = name;
         }
-        public TexturePack() { }
+        public ResourcePack() { }
 
         public Prefab GetBuilding(string name)
         {
@@ -81,7 +81,7 @@ namespace TextureReplacer
             }
         }
 
-        public void Merge(TexturePack pack)
+        public void Merge(ResourcePack pack)
         {
             foreach (var prefab in pack.Buildings)
             {
@@ -89,21 +89,21 @@ namespace TextureReplacer
             }
         }
 
-        public static TexturePack Deserialize(string fileName)
+        public static ResourcePack Deserialize(string fileName)
         {
             if (!File.Exists(fileName)) return null;
 
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(TexturePack));
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ResourcePack));
             try
             {
                 using (System.IO.StreamReader streamReader = new System.IO.StreamReader(fileName))
                 {
-                    return (TexturePack)xmlSerializer.Deserialize(streamReader);
+                    return (ResourcePack)xmlSerializer.Deserialize(streamReader);
                 }
             }
             catch (Exception e)
             {
-                Debug.Log("Couldn't load texture pack (XML malformed?)");
+                Debug.Log("Couldn't load resource pack (XML malformed?)");
                 throw e;
             }
         }

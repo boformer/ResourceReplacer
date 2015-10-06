@@ -1,2 +1,2 @@
-# Texture Replacer
+# Resource Replacer
 Mod for Cities: Skylines

@@ -3,17 +3,17 @@ using ColossalFramework.UI;
 using ICities;
 using PrefabHook;
 
-namespace TextureReplacer
+namespace ResourceReplacer
 {
-    public class TextureReplacerMod : LoadingExtensionBase, IUserMod
+    public class ResourceReplacerMod : LoadingExtensionBase, IUserMod
     {
         public string Name
         {
-            get { return "Texture Replacer"; }
+            get { return "Resource Replacer"; }
         }
         public string Description
         {
-            get { return "Replaces the textures of the game assets with remastered versions"; }
+            get { return "Replaces the textures and colors of game assets"; }
         }
 
         public override void OnCreated(ILoading loading)
@@ -23,9 +23,9 @@ namespace TextureReplacer
             // cancel if Prefab Hook is not installed
             if (!IsHooked()) return;
 
-            TextureReplacer.instance.OnCreated();
+            ResourceReplacer.instance.OnCreated();
 
-            BuildingInfoHook.OnPreInitialization += TextureReplacer.instance.ProcessBuilding;
+            BuildingInfoHook.OnPreInitialization += ResourceReplacer.instance.ProcessBuilding;
             BuildingInfoHook.Deploy();
         }
 
@@ -38,12 +38,12 @@ namespace TextureReplacer
             {
                 UIView.library.ShowModal<ExceptionPanel>("ExceptionPanel").SetMessage(
                     "Missing dependency", 
-                    "Texture Replacer requires the 'Prefab Hook' mod to work properly. Please subscribe to the mod and restart the game!", 
+                    Name + " requires the 'Prefab Hook' mod to work properly. Please subscribe to the mod and restart the game!", 
                     false);
                 return;
             }
 
-            TextureReplacer.instance.OnLevelLoaded();
+            ResourceReplacer.instance.OnLevelLoaded();
         }
 
         public override void OnReleased()
