@@ -44,6 +44,9 @@
     <Reference Include="ICities">
       <HintPath>..\..\..\Program Files (x86)\Steam\SteamApps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
     </Reference>
+    <Reference Include="PrefabHook">
+      <HintPath>..\..\..\Program Files (x86)\Steam\SteamApps\workshop\content\255710\530771650\PrefabHook.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
@@ -51,8 +54,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Detour\BuildingInfoDetour.cs" />
-    <Compile Include="Detour\RedirectionHelper.cs" />
     <Compile Include="TextureManager.cs" />
     <Compile Include="TexturePack.cs" />
     <Compile Include="TextureReplacer.cs" />
