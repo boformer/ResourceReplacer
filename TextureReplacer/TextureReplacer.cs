@@ -11,51 +11,36 @@ namespace TextureReplacer
     public class TextureReplacer : Singleton<TextureReplacer>
     {
         private const string TEXTURE_PACK_PATH = "TexturePack.xml";
-
-        private readonly string BUILDINGS_TEXTURE_DIR = Path.Combine("textures", "buildings");
-        private const string TEXTURE_LOD_SUFFIX = "_LOD";
         private const string TEXTURE_EXTENSION = ".png";
+        private static readonly string BUILDINGS_TEXTURE_DIR = Path.Combine("textures", "buildings");
+        private static readonly string[] PROPERTY_NAMES = { "_MainTex", "_XYSMap", "_ACIMap" };
 
-        private static readonly string[] propertyNames = { "_MainTex", "_XYSMap", "_ACIMap" };
+        private TextureManager textureManager;
 
-        private static readonly Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
-        private static readonly Dictionary<Texture, bool> textureUsedMap = new Dictionary<Texture, bool>();
+        // Texture packs
+        private readonly List<String> textureDirectories = new List<string>();
+        private TexturePack mergedTexturePack;
 
-        private static readonly List<String> textureSources = new List<string>();
-        private static TexturePack mergedPack;
-
-        private uint counter = 0;
-
-        public void UnloadUnusedTextures()
+        public void OnCreated()
         {
-            // unload unused textures
-            foreach (var pair in textureUsedMap)
-            {
-                if (!pair.Value) UnityEngine.Object.Destroy(pair.Key);
-            }
-            //textureUsedMap.Clear();
+            SearchTexturePacks();
+            textureManager = GetComponent<TextureManager>();
         }
 
-        public void Reset()
+        public void OnLevelLoaded()
         {
-            /*
-            foreach (var texture in textures.Values)
-            {
-                UnityEngine.Object.Destroy(texture);
-            }
-            textures.Clear();
-            textureUsedMap.Clear();*/
+            textureManager.UnloadUnusedTextures();
         }
 
         public void ProcessBuilding(BuildingInfo prefab)
         {
             if (prefab == null)
             {
-                Debug.Log("Prefab is null!");
+                Debug.LogError("Prefab is null!");
                 return;
             }
 
-            Debug.LogFormat("Processing texture of {0}", prefab.name);
+            //Debug.LogFormat("Processing texture of {0}", prefab.name);
 
             // detailed model
             ReplaceTextures(prefab.GetComponent<Renderer>());
@@ -63,11 +48,12 @@ namespace TextureReplacer
             // lod model
             if (prefab.m_lodObject != null) ReplaceTextures(prefab.m_lodObject.GetComponent<Renderer>());
 
-            var config = mergedPack.GetBuilding(prefab.name);
-            if (config != null) ReplaceColorVariations(prefab, config);
+            // color variations
+            var colorConfig = mergedTexturePack.GetBuilding(prefab.name);
+            if (colorConfig != null) ReplaceColorVariations(prefab, colorConfig);
         }
 
-        public void ReplaceColorVariations(BuildingInfo prefab, TexturePack.Prefab config)
+        private void ReplaceColorVariations(BuildingInfo prefab, TexturePack.Prefab colorConfig)
         {
             var renderer = prefab.GetComponent<Renderer>();
             if (renderer == null) return;
@@ -75,18 +61,18 @@ namespace TextureReplacer
             var material = renderer.sharedMaterial;
             if (material == null) return;
 
-            if (config.UseColorVariations != null) prefab.m_useColorVariations = config.UseColorVariations.Value;
+            if (colorConfig.UseColorVariations != null) prefab.m_useColorVariations = colorConfig.UseColorVariations.Value;
 
             if (prefab.m_useColorVariations)
             {
-                if (config.Color0 != null) material.SetColor("_ColorV0", config.Color0.toUnityColor());
-                if (config.Color1 != null) material.SetColor("_ColorV1", config.Color1.toUnityColor());
-                if (config.Color2 != null) material.SetColor("_ColorV2", config.Color2.toUnityColor());
-                if (config.Color3 != null) material.SetColor("_ColorV3", config.Color3.toUnityColor());
+                if (colorConfig.Color0 != null) material.SetColor("_ColorV0", colorConfig.Color0.toUnityColor());
+                if (colorConfig.Color1 != null) material.SetColor("_ColorV1", colorConfig.Color1.toUnityColor());
+                if (colorConfig.Color2 != null) material.SetColor("_ColorV2", colorConfig.Color2.toUnityColor());
+                if (colorConfig.Color3 != null) material.SetColor("_ColorV3", colorConfig.Color3.toUnityColor());
             }
-            else if (config.Color0 != null)
+            else if (colorConfig.Color0 != null)
             {
-                material.color = config.Color0.toUnityColor();
+                material.color = colorConfig.Color0.toUnityColor();
             }
         }
 
@@ -97,13 +83,14 @@ namespace TextureReplacer
             var material = renderer.sharedMaterial;
             if (material != null)
             {
-                foreach (var propertyName in propertyNames)
+                foreach (var propertyName in PROPERTY_NAMES)
                 {
                     Texture existingTexture = material.GetTexture(propertyName);
 
-                    if (existingTexture.name.Contains("TextureReplacer")) continue;
+                    // skip already replaced textures
+                    if (existingTexture.name.Contains(TextureManager.MOD_TEXTURE_PREFIX)) continue;
 
-                    foreach (string source in textureSources)
+                    foreach (string source in textureDirectories)
                     {
                         var texturePath = Path.Combine(Path.Combine(source, BUILDINGS_TEXTURE_DIR), existingTexture.name + TEXTURE_EXTENSION);
 
@@ -113,10 +100,11 @@ namespace TextureReplacer
             }
         }
 
+        // Returns true if texture was replaced
         private bool ReplaceTexture(Material material, string propertyName, string texturePath)
         {
             var originalTexture = material.GetTexture(propertyName);
-            var newTexture = GetTexture(texturePath);
+            var newTexture = textureManager.GetTexture(texturePath);
 
             if (newTexture != null)
             {
@@ -124,50 +112,23 @@ namespace TextureReplacer
                 material.SetTexture(propertyName, newTexture);
 
                 // mark old texture for unload
-                if (originalTexture != null && !textureUsedMap.ContainsKey(originalTexture)) textureUsedMap[originalTexture] = false;
+                textureManager.MarkTextureUnused(originalTexture);
 
                 return true;
             }
             else
             {
-                // no new texture? keep old texture
-                if (originalTexture != null) textureUsedMap[originalTexture] = true;
-
                 return false;
             }
         }
 
-        private Texture2D GetTexture(string texturePath)
+        private void SearchTexturePacks()
         {
-            Texture2D texture = null;
+            mergedTexturePack = new TexturePack("<merged>");
+            textureDirectories.Clear();
 
-            if (!textures.TryGetValue(texturePath, out texture))
-            {
-                if (File.Exists(texturePath))
-                {
-                    texture = new Texture2D(1, 1);
-                    texture.LoadImage(File.ReadAllBytes(texturePath));
-                    texture.Compress(true);
-                    texture.anisoLevel = 8;
-                    texture.name = "TextureReplacer " + counter++;
-
-                    //TODO save memory
-
-                    textures[texturePath] = texture;
-                }
-            }
-
-            return texture;
-        }
-
-
-        public void SearchTexturePacks()
-        {
-            mergedPack = new TexturePack("<merged>");
-            textureSources.Clear();
-
-            // User texture directory
-            textureSources.Add("");
+            // user texture directory (SteamApps\common\Cities_Skylines\textures\)
+            textureDirectories.Add("");
 
             foreach (var pluginInfo in PluginManager.instance.GetPluginsInfo().Where(pluginInfo => pluginInfo.isEnabled))
             {
@@ -176,7 +137,7 @@ namespace TextureReplacer
                     var texturePack = TexturePack.Deserialize(Path.Combine(pluginInfo.modPath, TEXTURE_PACK_PATH));
                     if (texturePack != null)
                     {
-                        mergedPack.Merge(texturePack);
+                        mergedTexturePack.Merge(texturePack);
                     }
                 }
                 catch (Exception e)
@@ -187,7 +148,7 @@ namespace TextureReplacer
 
                 if (Directory.Exists(Path.Combine(pluginInfo.modPath, BUILDINGS_TEXTURE_DIR)))
                 {
-                    textureSources.Add(pluginInfo.modPath);
+                    textureDirectories.Add(pluginInfo.modPath);
                 }
             }
         }

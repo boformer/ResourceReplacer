@@ -17,7 +17,7 @@ namespace TextureReplacer
         {
             base.OnCreated(loading);
 
-            TextureReplacer.instance.SearchTexturePacks();
+            TextureReplacer.instance.OnCreated();
 
             Detour.BuildingInfoDetour.Deploy();
         }
@@ -26,14 +26,12 @@ namespace TextureReplacer
         {
             base.OnLevelLoaded(mode);
 
-            TextureReplacer.instance.UnloadUnusedTextures();
+            TextureReplacer.instance.OnLevelLoaded();
         }
 
         public override void OnReleased()
         {
             base.OnReleased();
-
-            TextureReplacer.instance.Reset();
 
             Detour.BuildingInfoDetour.Revert();
         }
