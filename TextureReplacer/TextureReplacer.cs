@@ -24,7 +24,7 @@ namespace TextureReplacer
         public void OnCreated()
         {
             SearchTexturePacks();
-            textureManager = GetComponent<TextureManager>();
+            if(textureManager == null) textureManager = gameObject.AddComponent<TextureManager>();
         }
 
         public void OnLevelLoaded()
