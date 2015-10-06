@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace TextureReplacer
@@ -13,7 +12,7 @@ namespace TextureReplacer
     {
         private const string TEXTURE_PACK_PATH = "TexturePack.xml";
 
-        private readonly string BUILDINGS_TEXTURE_DIR = Path.Combine("textures","buildings");
+        private readonly string BUILDINGS_TEXTURE_DIR = Path.Combine("textures", "buildings");
         private const string TEXTURE_LOD_SUFFIX = "_LOD";
         private const string TEXTURE_EXTENSION = ".png";
 
@@ -27,7 +26,7 @@ namespace TextureReplacer
 
         private uint counter = 0;
 
-        public void UnloadUnusedTextures() 
+        public void UnloadUnusedTextures()
         {
             // unload unused textures
             foreach (var pair in textureUsedMap)
@@ -37,7 +36,7 @@ namespace TextureReplacer
             //textureUsedMap.Clear();
         }
 
-        public void Reset() 
+        public void Reset()
         {
             /*
             foreach (var texture in textures.Values)
@@ -47,10 +46,7 @@ namespace TextureReplacer
             textures.Clear();
             textureUsedMap.Clear();*/
         }
-        /*
-        public DebugOutput debug = new DebugOutput();
-        public DebugOutput debugLOD = new DebugOutput();
-        */
+
         public void ProcessBuilding(BuildingInfo prefab)
         {
             if (prefab == null)
@@ -61,37 +57,6 @@ namespace TextureReplacer
 
             Debug.LogFormat("Processing texture of {0}", prefab.name);
 
-            /*
-            var renderer = prefab.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                var material = renderer.sharedMaterial;
-                if (material != null)
-                {
-                    foreach (string prop in propertyNames)
-                    {
-                        debug.Log(material.GetTexture(prop), prefab.name);
-                    }
-                }
-            }
-            var lodObject = prefab.m_lodObject;
-            if(lodObject != null)
-            {
-                renderer = lodObject.GetComponent<Renderer>();
-                if (renderer != null)
-                {
-                    var material = renderer.sharedMaterial;
-                    if (material != null)
-                    {
-                        foreach (string prop in propertyNames)
-                        {
-                            debugLOD.Log(material.GetTexture(prop), lodObject.name + " (" + prefab.name + ")");
-                        }
-                    }
-                }
-            }
-            */
-
             // detailed model
             ReplaceTextures(prefab.GetComponent<Renderer>());
 
@@ -99,7 +64,7 @@ namespace TextureReplacer
             if (prefab.m_lodObject != null) ReplaceTextures(prefab.m_lodObject.GetComponent<Renderer>());
 
             var config = mergedPack.GetBuilding(prefab.name);
-            if(config != null) ReplaceColorVariations(prefab, config);
+            if (config != null) ReplaceColorVariations(prefab, config);
         }
 
         public void ReplaceColorVariations(BuildingInfo prefab, TexturePack.Prefab config)
@@ -137,7 +102,7 @@ namespace TextureReplacer
                     Texture existingTexture = material.GetTexture(propertyName);
 
                     if (existingTexture.name.Contains("TextureReplacer")) continue;
-                    
+
                     foreach (string source in textureSources)
                     {
                         var texturePath = Path.Combine(Path.Combine(source, BUILDINGS_TEXTURE_DIR), existingTexture.name + TEXTURE_EXTENSION);

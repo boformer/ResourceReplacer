@@ -1,10 +1,5 @@
-﻿using ColossalFramework;
-using ColossalFramework.Plugins;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 
 namespace TextureReplacer.Detour
@@ -51,11 +46,11 @@ namespace TextureReplacer.Detour
             {
                 TextureReplacer.instance.ProcessBuilding(base.GetComponent<BuildingInfo>());
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 Debug.LogException(e);
             }
-            
+
             RedirectionHelper.RevertRedirect(_InitializePrefab_original, _InitializePrefab_state);
             base.InitializePrefab();
             RedirectionHelper.RedirectCalls(_InitializePrefab_original, _InitializePrefab_detour);

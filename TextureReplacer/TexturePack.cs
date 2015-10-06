@@ -9,16 +9,17 @@ namespace TextureReplacer
     public class TexturePack
     {
         [XmlAttribute]
-        public string Name {get; set;}
-        
+        public string Name { get; set; }
+
         private List<Prefab> _buildings;
         [XmlArray, XmlArrayItem(ElementName = "Building"), DefaultValue(null)]
-        public List<Prefab> Buildings {
+        public List<Prefab> Buildings
+        {
             get { return _buildings == null ? _buildings = new List<Prefab>() : _buildings; }
             set { _buildings = value; }
         }
 
-        public TexturePack(string name) 
+        public TexturePack(string name)
         {
             Name = name;
         }
@@ -46,45 +47,45 @@ namespace TextureReplacer
             public string Texture {get; set;}
             */
             [DefaultValue(null)]
-            public Color Color0 {get; set;}
+            public Color Color0 { get; set; }
 
             [DefaultValue(null)]
-            public Color Color1 {get; set;}
+            public Color Color1 { get; set; }
 
             [DefaultValue(null)]
-            public Color Color2 {get; set;}
+            public Color Color2 { get; set; }
 
             [DefaultValue(null)]
-            public Color Color3 {get; set;}
+            public Color Color3 { get; set; }
         }
 
-        public class Color 
+        public class Color
         {
             [XmlAttribute]
             public int r = 255;
 
             [XmlAttribute]
             public int g = 255;
-            
+
             [XmlAttribute]
             public int b = 255;
 
             [XmlAttribute, DefaultValue(255)]
             public int a = 255;
 
-            public Color() {}
+            public Color() { }
 
-            public UnityEngine.Color toUnityColor() 
+            public UnityEngine.Color toUnityColor()
             {
                 return new UnityEngine.Color(r / 255f, g / 255f, b / 255f, a / 255f);
             }
         }
 
-        public void Merge(TexturePack pack) 
+        public void Merge(TexturePack pack)
         {
-            foreach (var prefab in pack.Buildings) 
-            { 
-                if(this.GetBuilding(prefab.Name) == null) Buildings.Add(prefab);
+            foreach (var prefab in pack.Buildings)
+            {
+                if (this.GetBuilding(prefab.Name) == null) Buildings.Add(prefab);
             }
         }
 

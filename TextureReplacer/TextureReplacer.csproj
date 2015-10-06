@@ -53,7 +53,6 @@
   <ItemGroup>
     <Compile Include="Detour\BuildingInfoDetour.cs" />
     <Compile Include="Detour\RedirectionHelper.cs" />
-    <Compile Include="DebugOutput.cs" />
     <Compile Include="TexturePack.cs" />
     <Compile Include="TextureReplacer.cs" />
     <Compile Include="TextureReplacerMod.cs" />
