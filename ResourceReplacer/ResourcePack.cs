@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Xml.Serialization;
+using System.Linq;
 using UnityEngine;
 namespace ResourceReplacer
 {
@@ -10,14 +11,13 @@ namespace ResourceReplacer
     {
         [XmlAttribute]
         public string Name { get; set; }
+        public int Version { get; set; }
 
-        private List<Prefab> _buildings;
         [XmlArray, XmlArrayItem(ElementName = "Building"), DefaultValue(null)]
-        public List<Prefab> Buildings
-        {
-            get { return _buildings == null ? _buildings = new List<Prefab>() : _buildings; }
-            set { _buildings = value; }
-        }
+        public List<Prefab> Buildings { get; set; }
+
+        [XmlArray, DefaultValue(null)]
+        public List<Entry> Changelog { get; set; }
 
         public ResourcePack(string name)
         {
@@ -27,11 +27,28 @@ namespace ResourceReplacer
 
         public Prefab GetBuilding(string name)
         {
+            if (Buildings == null) return null;
+
             foreach (var prefab in Buildings)
             {
                 if (prefab.Name == name) return prefab;
             }
             return null;
+        }
+
+        public String GetChangelog(int fromVersion) 
+        {
+            if (Changelog == null) return null;
+
+            String log = "";
+
+            foreach (var entry in Changelog.Where(entry => (entry.Version <= Version && entry.Version > fromVersion)).OrderByDescending(entry => entry.Version)) 
+            {
+                log += entry.Text;
+                log += "\n";
+            }
+
+            return log == "" ? null : log;
         }
 
         public class Prefab
@@ -81,11 +98,26 @@ namespace ResourceReplacer
             }
         }
 
+        public class Entry
+        {
+            [XmlAttribute]
+            public int Version { get; set; }
+
+            [XmlText]
+            public string Text { get; set; }
+        }
+
         public void Merge(ResourcePack pack)
         {
+            if (pack.Buildings == null) return;
+            
             foreach (var prefab in pack.Buildings)
             {
-                if (this.GetBuilding(prefab.Name) == null) Buildings.Add(prefab);
+                if (this.GetBuilding(prefab.Name) == null)
+                {
+                    if (Buildings == null) Buildings = new List<Prefab>();
+                    Buildings.Add(prefab);
+                }
             }
         }
 

@@ -54,6 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ResourceReplacerConfiguration.cs" />
     <Compile Include="TextureManager.cs" />
     <Compile Include="ResourcePack.cs" />
     <Compile Include="ResourceReplacer.cs" />
