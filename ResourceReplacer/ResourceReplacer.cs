@@ -13,7 +13,12 @@ namespace ResourceReplacer
         private const string RESOURCE_PACK_PATH = "ResourcePack.xml";
         private const string TEXTURE_EXTENSION = ".png";
         private static readonly string BUILDINGS_TEXTURE_DIR = Path.Combine("textures", "buildings");
-        private static readonly string[] PROPERTY_NAMES = { "_MainTex", "_XYSMap", "_ACIMap" };
+        private static readonly Dictionary<string, string> PROPERTY_NAMES = new Dictionary<string, string>()
+        { 
+            {"_MainTex", "-rgb"},
+            {"_XYSMap", "-xys"}, 
+            {"_ACIMap", "-aci"}, 
+        };
 
         private TextureManager textureManager;
 
@@ -42,11 +47,16 @@ namespace ResourceReplacer
 
             //Debug.LogFormat("Processing texture of {0}", prefab.name);
 
+            // check if the building is a workshop item
+            // in that case, use steam id (+ _lod) as the texture name
+            var steamID = GetSteamID(prefab.name);
+            var texturePrefix = steamID == null ? prefab.name : steamID;
+
             // detailed model
-            ReplaceTextures(prefab.GetComponent<Renderer>());
+            ReplaceTextures(prefab.GetComponent<Renderer>(), texturePrefix, steamID == null);
 
             // lod model
-            if (prefab.m_lodObject != null) ReplaceTextures(prefab.m_lodObject.GetComponent<Renderer>());
+            if (prefab.m_lodObject != null) ReplaceTextures(prefab.m_lodObject.GetComponent<Renderer>(), texturePrefix + "_LOD", steamID == null);
 
             // color variations
             var colorConfig = mergedResourcePack.GetBuilding(prefab.name);
@@ -76,23 +86,29 @@ namespace ResourceReplacer
             }
         }
 
-        private void ReplaceTextures(Renderer renderer)
+        private void ReplaceTextures(Renderer renderer, string texturePrefix, bool useExistingTextureName)
         {
             if (renderer == null) return;
 
             var material = renderer.sharedMaterial;
             if (material != null)
             {
-                foreach (var propertyName in PROPERTY_NAMES)
+                foreach (var propertyName in PROPERTY_NAMES.Keys)
                 {
                     Texture existingTexture = material.GetTexture(propertyName);
 
                     // skip already replaced textures
-                    if (existingTexture.name.Contains(TextureManager.MOD_TEXTURE_PREFIX)) continue;
+                    if (existingTexture != null && existingTexture.name.Contains(TextureManager.MOD_TEXTURE_PREFIX)) continue;
+
+                    string textureName = null;
+                    if(useExistingTextureName && existingTexture != null) textureName = existingTexture.name;
+                    else textureName = texturePrefix + PROPERTY_NAMES[propertyName];
+
+                    if (!useExistingTextureName) Debug.Log("%%% Searching tex " + textureName);
 
                     foreach (string source in textureDirectories)
                     {
-                        var texturePath = Path.Combine(Path.Combine(source, BUILDINGS_TEXTURE_DIR), existingTexture.name + TEXTURE_EXTENSION);
+                        var texturePath = Path.Combine(Path.Combine(source, BUILDINGS_TEXTURE_DIR), textureName + TEXTURE_EXTENSION);
 
                         if (ReplaceTexture(material, propertyName, texturePath)) break;
                     }
@@ -112,7 +128,7 @@ namespace ResourceReplacer
                 material.SetTexture(propertyName, newTexture);
 
                 // mark old texture for unload
-                textureManager.MarkTextureUnused(originalTexture);
+                if(originalTexture != null) textureManager.MarkTextureUnused(originalTexture);
 
                 return true;
             }
@@ -151,6 +167,22 @@ namespace ResourceReplacer
                     textureDirectories.Add(pluginInfo.modPath);
                 }
             }
+        }
+
+        private string GetSteamID(string prefabName) 
+        {
+            string steamID = null;
+            
+            if (prefabName.Contains("."))
+            {
+                steamID = prefabName.Substring(0, prefabName.IndexOf("."));
+
+                ulong result;
+                if (!ulong.TryParse(steamID, out result) || result == 0)
+                    steamID = null;
+            }
+
+            return steamID;
         }
     }
 }
