@@ -15,10 +15,19 @@ namespace ResourceReplacer {
                 ResourceReplacer.instance.RestoreAllTextures();
                 ResourceReplacer.instance.ClearCache();
                 ResourceReplacer.instance.ReplaceAllTextures();
-                BuildingManager.instance.InitRenderData();
+                RegenerateLodAtlases();
             } else {
                 _processed = false;
             }
+        }
+
+        public static void RegenerateLodAtlases() {
+            var prefabCount = PrefabCollection<BuildingInfo>.LoadedCount();
+            for (var i = 0u; i < prefabCount; i++) {
+                var prefab = PrefabCollection<BuildingInfo>.GetLoaded(i);
+                if(prefab != null) prefab.m_hasLodData = false;
+            }
+            BuildingManager.instance.InitRenderData();
         }
     }
 

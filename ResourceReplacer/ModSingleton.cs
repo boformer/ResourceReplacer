@@ -17,6 +17,8 @@ namespace ResourceReplacer {
             }
         }
 
+        public static bool exists => instance != null;
+
         public static T Ensure() {
             return instance;
         }

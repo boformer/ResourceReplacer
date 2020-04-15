@@ -9,9 +9,8 @@ namespace ResourceReplacer {
     // TODO restore original textures on reload
     // TODO live reload
     public class ResourceReplacer : ModSingleton<ResourceReplacer> {
-        private readonly List<ResourcePack> _activePacks = new List<ResourcePack> {
-            new FileResourcePack(DataLocation.localApplicationData) // TODO find resource packs from mod folder
-        };
+        public readonly List<ResourcePack> ActivePacks = new List<ResourcePack>();
+
         private readonly Dictionary<string, Texture> _originalTextures = new Dictionary<string, Texture>();
         private readonly Dictionary<TextureKey, Texture2D> _replacementTextures = new Dictionary<TextureKey, Texture2D>();
 
@@ -26,19 +25,16 @@ namespace ResourceReplacer {
             ReplaceTextures(prefab.GetComponent<Renderer>(), prefab.name, false);
 
             if (prefab.m_lodObject != null) {
-                if (ReplaceTextures(prefab.m_lodObject.GetComponent<Renderer>(), prefab.name, true)) {
-                    prefab.m_hasLodData = false;
-                }
+                ReplaceTextures(prefab.m_lodObject.GetComponent<Renderer>(), prefab.name, true);
             }
         }
 
-        private bool ReplaceTextures(Renderer renderer, string prefabName, bool lod) {
-            if (renderer == null) return false;
+        private void ReplaceTextures(Renderer renderer, string prefabName, bool lod) {
+            if (renderer == null) return;
 
-            var material = renderer.sharedMaterial;
-            if (material == null) return false;
+            var material = renderer.sharedMaterial; 
+            if (material == null) return;
 
-            var replaced = false;
             foreach (var propertyName in TextureNames.Properties.Keys) {
                 var texture = material.GetTexture(propertyName);
 
@@ -51,15 +47,12 @@ namespace ResourceReplacer {
 
                     // Apply replacement texture
                     material.SetTexture(propertyName, replacementTexture);
-
-                    replaced = true;
                 }
             }
-            return replaced;
         }
 
         private Texture2D GetReplacementTexture(string textureName) {
-            foreach (var pack in _activePacks) {
+            foreach (var pack in ActivePacks) {
                 var key = new TextureKey(pack.Path, textureName);
 
                 if (_replacementTextures.TryGetValue(key, out var replacementTexture)) {
@@ -90,19 +83,16 @@ namespace ResourceReplacer {
             RestoreTextures(prefab.GetComponent<Renderer>(), prefab.name, false);
 
             if (prefab.m_lodObject != null) {
-                if (RestoreTextures(prefab.m_lodObject.GetComponent<Renderer>(), prefab.name, false)) {
-                    prefab.m_hasLodData = false;
-                }
+                RestoreTextures(prefab.m_lodObject.GetComponent<Renderer>(), prefab.name, false);
             }
         }
 
-        private bool RestoreTextures(Renderer renderer, string prefabName, bool lod) {
-            if (renderer == null) return false;
+        private void RestoreTextures(Renderer renderer, string prefabName, bool lod) {
+            if (renderer == null) return;
 
             var material = renderer.sharedMaterial;
-            if (material == null) return false;
+            if (material == null) return;
 
-            var restored = false;
             foreach (var propertyName in TextureNames.Properties.Keys) {
                 var texture = material.GetTexture(propertyName);
                 if (TextureNames.IsOriginalTexture(texture)) continue;
@@ -110,16 +100,18 @@ namespace ResourceReplacer {
                 var textureName = TextureNames.GetReplacementTextureName(prefabName, texture, propertyName, lod);
 
                 if (_originalTextures.TryGetValue(textureName, out var originalTexture)) {
-                    material.SetTexture(propertyName, originalTexture); 
-                    restored = true;
+                    material.SetTexture(propertyName, originalTexture);
                 }
             }
-
-            return restored;
         }
 
         public void ClearCache() {
             _originalTextures.Clear();
+
+            foreach (var texture in _replacementTextures.Values) {
+                UnityEngine.Object.DestroyImmediate(texture, true);
+            }
+
             _replacementTextures.Clear();
         }
 

@@ -2,7 +2,7 @@
 
 namespace ResourceReplacer.Pack {
     public abstract class ResourcePack {
-        public abstract string Path { get; }
+        public abstract string Path { get; set; }
         public abstract Texture2D GetBuildingTexture(string textureName);
 
         public abstract bool TryGetBuildingColors(string prefabName, out PrefabColors colors);

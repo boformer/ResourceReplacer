@@ -74,6 +74,14 @@ namespace ResourceReplacer.Editor {
         }
 
         private static void DumpTexture(string propertyName) {
+            if (!ResourcePackEditor.exists || ResourcePackEditor.instance.ActivePack == null) {
+                Debug.Log("No pack selected!");
+                return;
+
+            }
+
+            var dumpDir = Path.Combine(ResourcePackEditor.instance.ActivePack.BuildingTexturesPath, "dump");
+
             var currentBuilding = WorldInfoPanel.GetCurrentInstanceID().Building;
             if (currentBuilding == 0) {
                 Debug.Log("No building selected!");
@@ -90,7 +98,7 @@ namespace ResourceReplacer.Editor {
                 var texture = info.m_material.GetTexture(propertyName) as Texture2D;
                 if (texture != null) {
                     var textureName = TextureNames.GetReplacementTextureName(info.name, texture, propertyName, false);
-                    var fileName = Path.Combine(FileResourcePack.DumpDir, textureName + ".png");
+                    var fileName = Path.Combine(dumpDir, textureName + ".png");
                     DumpTexture2D(texture, fileName);
                 }
             }
@@ -99,7 +107,7 @@ namespace ResourceReplacer.Editor {
                 var texture = info.m_lodMaterial.GetTexture(propertyName) as Texture2D;
                 if (texture != null) {
                     var textureName = TextureNames.GetReplacementTextureName(info.name, texture, propertyName, true);
-                    var fileName = Path.Combine(FileResourcePack.DumpDir, textureName + ".png");
+                    var fileName = Path.Combine(dumpDir, textureName + ".png");
                     DumpTexture2D(texture, fileName);
                 }
             }

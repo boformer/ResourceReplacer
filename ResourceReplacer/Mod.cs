@@ -10,11 +10,21 @@ namespace ResourceReplacer
 
         public void OnEnabled() {
             ResourceReplacer.Ensure();
+            ResourcePackEditor.Ensure();
+            var devPack = ResourcePackEditor.GetOrCreateDevResourcePack();
+            if (devPack != null) {
+                ResourcePackEditor.instance.ActivePack = devPack;
+                ResourceReplacer.instance.ActivePacks.Add(devPack);
+            }
+
             Patcher.Apply();
 
             // for hot reload
             if (LoadingComplete) {
                 InstallUI();
+
+                ResourceReplacer.instance.ReplaceAllTextures();
+                LiveReload.RegenerateLodAtlases();
             }
         }
 
@@ -22,15 +32,21 @@ namespace ResourceReplacer
             // for hot reload
             if (LoadingComplete) {
                 UninstallUI();
+
+                ResourceReplacer.instance.RestoreAllTextures();
+                LiveReload.RegenerateLodAtlases();
             }
 
             Patcher.Revert();
+            ResourcePackEditor.Uninstall();
             ResourceReplacer.Uninstall();
         }
 
         public void OnCreated(ILoading loading) { }
 
-        public void OnReleased() { }
+        public void OnReleased() {
+            ResourceReplacer.instance.RestoreAllTextures();
+        }
 
         public void OnLevelLoaded(LoadMode mode) {
             InstallUI();
