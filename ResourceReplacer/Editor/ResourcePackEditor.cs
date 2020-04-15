@@ -7,6 +7,10 @@ namespace ResourceReplacer.Editor {
     public class ResourcePackEditor : ModSingleton<ResourcePackEditor> {
         public FileResourcePack ActivePack { get; set; }
 
+        public void SaveChanges() {
+            Directory.CreateDirectory(ActivePack.Path);
+            FileResourcePack.SerializeDefinition(ActivePack);
+        }
 
         public static FileResourcePack GetOrCreateDevResourcePack() {
             var packPath = Path.Combine(DataLocation.localApplicationData, "DevResourcePack");
@@ -19,9 +23,8 @@ namespace ResourceReplacer.Editor {
                         Path = packPath,
                         Name = "Dev Pack"
                     };
-                    var definitionPath = Path.Combine(packPath, FileResourcePack.DefinitionFileName);
                     Directory.CreateDirectory(packPath);
-                    FileResourcePack.SerializeDefinition(definitionPath, pack);
+                    FileResourcePack.SerializeDefinition(pack);
                 }
 
                 return pack;

@@ -118,19 +118,39 @@ namespace ResourceReplacer {
         #endregion
 
         #region Color Variations
+        public void ReplaceAllBuildingColors() {
+            var prefabCount = PrefabCollection<BuildingInfo>.LoadedCount();
+            for (var i = 0u; i < prefabCount; i++) ReplaceBuildingColors(PrefabCollection<BuildingInfo>.GetLoaded(i));
+        }
+
+        public void ReplaceBuildingColors(BuildingInfo prefab) {
+            if (prefab == null) return;
+
+            foreach (var pack in ActivePacks) {
+                if(pack.TryGetBuildingColors(prefab.name, out var colors)) {
+                    SetBuildingColors(prefab, colors);
+                    break;
+                }
+            }
+        }
+
         public void SetBuildingColors(BuildingInfo prefab, ResourcePack.PrefabColors colors) {
             if (prefab == null) return;
 
             if (!_originalBuildingColors.ContainsKey(prefab.name)) {
-                _originalBuildingColors[prefab.name] = new ResourcePack.PrefabColors {
-                    UseColorVariation = prefab.m_useColorVariations,
-                    Color0 = prefab.m_color0,
-                    Color1 = prefab.m_color1,
-                    Color2 = prefab.m_color2,
-                    Color3 = prefab.m_color3
-                };
+                _originalBuildingColors[prefab.name] = ResourcePack.PrefabColors.From(prefab);
             }
-            ApplyColors(prefab, colors);
+            colors.Apply(prefab);
+        }
+
+        public ResourcePack.PrefabColors GetOriginalBuildingColors(BuildingInfo prefab) {
+            if (prefab == null) return default;
+
+            if (_originalBuildingColors.TryGetValue(prefab.name, out var colors)) {
+                return colors;
+            } else {
+                return ResourcePack.PrefabColors.From(prefab);
+            }
         }
 
         public void RestoreAllBuildingColors() {
@@ -142,16 +162,8 @@ namespace ResourceReplacer {
         public void RestoreBuildingColors(BuildingInfo prefab) {
             if (prefab == null) return;
             if (_originalBuildingColors.TryGetValue(prefab.name, out var colors)) {
-                ApplyColors(prefab, colors);
+                colors.Apply(prefab);
             }
-        }
-
-        private static void ApplyColors(BuildingInfo prefab, ResourcePack.PrefabColors colors) {
-            prefab.m_useColorVariations = colors.UseColorVariation;
-            prefab.m_color0 = colors.Color0;
-            prefab.m_color1 = colors.Color1;
-            prefab.m_color2 = colors.Color2;
-            prefab.m_color3 = colors.Color3;
         }
         #endregion
 

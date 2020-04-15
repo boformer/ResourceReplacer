@@ -8,6 +8,7 @@ namespace ResourceReplacer.Patches {
         public static void Prefix(BuildingInfo __instance) {
             try {
                 ResourceReplacer.instance.ReplaceBuildingTextures(__instance);
+                ResourceReplacer.instance.ReplaceBuildingColors(__instance);
             } catch (Exception e) {
                 Debug.LogException(e);
             }

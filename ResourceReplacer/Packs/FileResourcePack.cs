@@ -47,11 +47,13 @@ namespace ResourceReplacer.Packs {
             var item = BuildingColors?.FirstOrDefault(e => e.Name == prefabName);
             if (item != null) {
                 colors = new PrefabColors {
-                    Color0 = item.Color0,
-                    Color1 = item.Color1,
-                    Color2 = item.Color2,
-                    Color3 = item.Color3
+                    UseColorVariations = item.UseColorVariations,
+                    Color0 = item.Color0 ?? UnityEngine.Color.white,
+                    Color1 = item.Color1 ?? UnityEngine.Color.white,
+                    Color2 = item.Color2 ?? UnityEngine.Color.white,
+                    Color3 = item.Color3 ?? UnityEngine.Color.white
                 };
+                UnityEngine.Debug.Log(colors);
                 return true;
             } else {
                 colors = default;
@@ -66,7 +68,7 @@ namespace ResourceReplacer.Packs {
                 BuildingColors.Add(item = new NamedPrefabColors {Name = prefabName});
             }
 
-            item.UseColorVariations = colors.UseColorVariation;
+            item.UseColorVariations = colors.UseColorVariations;
             item.Color0 = colors.Color0;
             item.Color1 = colors.Color1;
             item.Color2 = colors.Color2;
@@ -77,13 +79,12 @@ namespace ResourceReplacer.Packs {
             BuildingColors.RemoveAll(e => e.Name == prefabName);
         }
 
-
         public class NamedPrefabColors {
             [XmlAttribute]
             public string Name { get; set; }
 
             [XmlAttribute, DefaultValue(true)]
-            public bool UseColorVariations { get; set; }
+            public bool UseColorVariations { get; set; } = true;
 
             [DefaultValue(null)]
             public Color Color0 { get; set; }
@@ -142,9 +143,10 @@ namespace ResourceReplacer.Packs {
             }
         }
 
-        public static void SerializeDefinition(string filePath, FileResourcePack pack) {
+        public static void SerializeDefinition(FileResourcePack pack) {
+            var definitionFilePath = System.IO.Path.Combine(pack.Path, DefinitionFileName);
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(FileResourcePack));
-            using (var streamWriter = new StreamWriter(filePath)) {
+            using (var streamWriter = new StreamWriter(definitionFilePath)) {
                 xmlSerializer.Serialize(streamWriter, pack);
             }
         }

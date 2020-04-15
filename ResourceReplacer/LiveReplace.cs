@@ -1,4 +1,5 @@
 ﻿using ICities;
+using ResourceReplacer.Editor;
 using UnityEngine;
 
 namespace ResourceReplacer {
@@ -27,7 +28,11 @@ namespace ResourceReplacer {
         }
 
         public static void Replace() {
+            ResourceReplacer.instance.ActivePacks.Clear();
+            ResourceReplacer.instance.ActivePacks.Add(ResourcePackEditor.GetOrCreateDevResourcePack());
+
             ResourceReplacer.instance.ReplaceAllBuildingTextures();
+            ResourceReplacer.instance.ReplaceAllBuildingColors();
         }
 
         public static void RefreshRenderData() {
