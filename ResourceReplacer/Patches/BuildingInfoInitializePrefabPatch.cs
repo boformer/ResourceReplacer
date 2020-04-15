@@ -7,7 +7,7 @@ namespace ResourceReplacer.Patches {
     public static class BuildingInfoInitializePrefabPatch {
         public static void Prefix(BuildingInfo __instance) {
             try {
-                ResourceReplacer.instance.ReplaceTextures(__instance);
+                ResourceReplacer.instance.ReplaceBuildingTextures(__instance);
             } catch (Exception e) {
                 Debug.LogException(e);
             }

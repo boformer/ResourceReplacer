@@ -23,8 +23,8 @@ namespace ResourceReplacer
             if (LoadingComplete) {
                 InstallUI();
 
-                ResourceReplacer.instance.ReplaceAllTextures();
-                LiveReload.RegenerateLodAtlases();
+                LiveReload.Replace();
+                LiveReload.RefreshRenderData();
             }
         }
 
@@ -33,8 +33,8 @@ namespace ResourceReplacer
             if (LoadingComplete) {
                 UninstallUI();
 
-                ResourceReplacer.instance.RestoreAllTextures();
-                LiveReload.RegenerateLodAtlases();
+                LiveReload.Restore();
+                LiveReload.RefreshRenderData();
             }
 
             Patcher.Revert();
@@ -44,10 +44,6 @@ namespace ResourceReplacer
 
         public void OnCreated(ILoading loading) { }
 
-        public void OnReleased() {
-            ResourceReplacer.instance.RestoreAllTextures();
-        }
-
         public void OnLevelLoaded(LoadMode mode) {
             InstallUI();
         }
@@ -55,6 +51,8 @@ namespace ResourceReplacer
         public void OnLevelUnloading() {
             UninstallUI();
         }
+
+        public void OnReleased() {}
 
         public bool LoadingComplete => LoadingManager.exists && LoadingManager.instance.m_loadingComplete;
 

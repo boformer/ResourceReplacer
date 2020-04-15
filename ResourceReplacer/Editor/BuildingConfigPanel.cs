@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using ColossalFramework.UI;
+using ResourceReplacer.Pack;
 using ResourceReplacer.Packs;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -38,6 +39,12 @@ namespace ResourceReplacer.Editor {
 
             var dumpAciButton = AddButton(panel, "Dump ACI");
             dumpAciButton.eventClick += (comp, ev) => DumpTexture("_ACIMap");
+
+            var colorTestButton = AddButton(panel, "ColorTest");
+            colorTestButton.eventClick += (comp, ev) => SetColors();
+
+            var resetColorsButton = AddButton(panel, "Reset Colors");
+            resetColorsButton.eventClick += (comp, ev) => ResetColors();
         }
 
         public static void Uninstall() {
@@ -77,43 +84,33 @@ namespace ResourceReplacer.Editor {
             if (!ResourcePackEditor.exists || ResourcePackEditor.instance.ActivePack == null) {
                 Debug.Log("No pack selected!");
                 return;
-
             }
 
             var dumpDir = Path.Combine(ResourcePackEditor.instance.ActivePack.BuildingTexturesPath, "dump");
 
-            var currentBuilding = WorldInfoPanel.GetCurrentInstanceID().Building;
-            if (currentBuilding == 0) {
-                Debug.Log("No building selected!");
-                return;
-            }
+            var prefab = GetSelectedPrefab();
+            if (prefab == null) return;
 
-            var info = BuildingManager.instance.m_buildings.m_buffer[currentBuilding].Info;
-            if (info == null) {
-                Debug.Log("Info null!");
-                return;
-            }
-
-            if (info.m_material != null) {
-                var texture = info.m_material.GetTexture(propertyName) as Texture2D;
+            if (prefab.m_material != null) {
+                var texture = prefab.m_material.GetTexture(propertyName) as Texture2D;
                 if (texture != null) {
-                    var textureName = TextureNames.GetReplacementTextureName(info.name, texture, propertyName, false);
+                    var textureName = TextureNames.GetReplacementTextureName(prefab.name, texture, propertyName, false);
                     var fileName = Path.Combine(dumpDir, textureName + ".png");
                     DumpTexture2D(texture, fileName);
                 }
             }
 
-            if (info.m_lodMaterial != null) {
-                var texture = info.m_lodMaterial.GetTexture(propertyName) as Texture2D;
+            if (prefab.m_lodMaterial != null) {
+                var texture = prefab.m_lodMaterial.GetTexture(propertyName) as Texture2D;
                 if (texture != null) {
-                    var textureName = TextureNames.GetReplacementTextureName(info.name, texture, propertyName, true);
+                    var textureName = TextureNames.GetReplacementTextureName(prefab.name, texture, propertyName, true);
                     var fileName = Path.Combine(dumpDir, textureName + ".png");
                     DumpTexture2D(texture, fileName);
                 }
             }
         }
 
-        public static void DumpTexture2D(Texture2D texture, string fileName) {
+        private static void DumpTexture2D(Texture2D texture, string fileName) {
             byte[] bytes;
 
             try {
@@ -128,6 +125,48 @@ namespace ResourceReplacer.Editor {
             Directory.CreateDirectory(Path.GetDirectoryName(fileName));
             File.WriteAllBytes(fileName, bytes);
             Debug.Log($"Texture dumped to \"{fileName}\"");
+        }
+
+        private static void SetColors() {
+            if (!ResourcePackEditor.exists || ResourcePackEditor.instance.ActivePack == null) {
+                Debug.Log("No pack selected!");
+                return;
+            }
+
+            var prefab = GetSelectedPrefab();
+            if (prefab == null) return;
+
+            ResourceReplacer.instance.SetBuildingColors(prefab, new ResourcePack.PrefabColors {
+                UseColorVariation = true,
+                Color0 = Color.red,
+                Color1 = Color.yellow,
+                Color2 = Color.blue,
+                Color3 = Color.green
+            });
+            BuildingManager.instance.UpdateBuildingColors();
+        }
+
+        private static void ResetColors() {
+            if (!ResourcePackEditor.exists || ResourcePackEditor.instance.ActivePack == null) {
+                Debug.Log("No pack selected!");
+                return;
+            }
+
+            var prefab = GetSelectedPrefab();
+            if (prefab == null) return;
+
+            ResourceReplacer.instance.RestoreBuildingColors(prefab);
+            BuildingManager.instance.UpdateBuildingColors();
+        }
+
+        private static BuildingInfo GetSelectedPrefab() {
+            var currentBuilding = WorldInfoPanel.GetCurrentInstanceID().Building;
+            if (currentBuilding == 0) {
+                Debug.Log("No building selected!");
+                return null;
+            }
+
+            return BuildingManager.instance.m_buildings.m_buffer[currentBuilding].Info;
         }
     }
 }

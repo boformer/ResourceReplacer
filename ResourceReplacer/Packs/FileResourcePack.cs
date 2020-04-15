@@ -44,13 +44,13 @@ namespace ResourceReplacer.Packs {
         }
 
         public override bool TryGetBuildingColors(string prefabName, out PrefabColors colors) {
-            var value = BuildingColors?.FirstOrDefault(e => e.Name == prefabName);
-            if (value != null) {
+            var item = BuildingColors?.FirstOrDefault(e => e.Name == prefabName);
+            if (item != null) {
                 colors = new PrefabColors {
-                    Color0 = value.Color0,
-                    Color1 = value.Color1,
-                    Color2 = value.Color2,
-                    Color3 = value.Color3
+                    Color0 = item.Color0,
+                    Color1 = item.Color1,
+                    Color2 = item.Color2,
+                    Color3 = item.Color3
                 };
                 return true;
             } else {
@@ -58,6 +58,25 @@ namespace ResourceReplacer.Packs {
                 return false;
             }
         }
+
+        public void SetBuildingColors(string prefabName, PrefabColors colors) {
+            var item = BuildingColors?.FirstOrDefault(e => e.Name == prefabName);
+            if (item == null) {
+                if(BuildingColors == null) BuildingColors = new List<NamedPrefabColors>();
+                BuildingColors.Add(item = new NamedPrefabColors {Name = prefabName});
+            }
+
+            item.UseColorVariations = colors.UseColorVariation;
+            item.Color0 = colors.Color0;
+            item.Color1 = colors.Color1;
+            item.Color2 = colors.Color2;
+            item.Color3 = colors.Color3;
+        }
+
+        public void RemoveBuildingColors(string prefabName) {
+            BuildingColors.RemoveAll(e => e.Name == prefabName);
+        }
+
 
         public class NamedPrefabColors {
             [XmlAttribute]
@@ -92,7 +111,10 @@ namespace ResourceReplacer.Packs {
             [XmlAttribute, DefaultValue(255)]
             public byte a = 255;
 
-            public static implicit operator Color(UnityEngine.Color32 e) => new Color { r = e.r, g = e.g, b = e.b, a = e.a };
+            public static implicit operator Color(UnityEngine.Color e) {
+                var e32 = (Color32) e;
+                return new Color { r = e32.r, g = e32.g, b = e32.b, a = e32.a };
+            }
             public static implicit operator UnityEngine.Color(Color e) => new UnityEngine.Color32(e.r, e.g, e.b, e.a);
         }
 

@@ -12,22 +12,35 @@ namespace ResourceReplacer {
 
                 Debug.Log("Live Reload...");
 
-                ResourceReplacer.instance.RestoreAllTextures();
-                ResourceReplacer.instance.ClearCache();
-                ResourceReplacer.instance.ReplaceAllTextures();
-                RegenerateLodAtlases();
+                Restore();
+                Replace();
+                RefreshRenderData();
             } else {
                 _processed = false;
             }
         }
 
-        public static void RegenerateLodAtlases() {
+        public static void Restore() {
+            ResourceReplacer.instance.RestoreAllBuildingTextures();
+            ResourceReplacer.instance.RestoreAllBuildingColors();
+            ResourceReplacer.instance.ClearCache();
+        }
+
+        public static void Replace() {
+            ResourceReplacer.instance.ReplaceAllBuildingTextures();
+        }
+
+        public static void RefreshRenderData() {
+            // LOD atlases
             var prefabCount = PrefabCollection<BuildingInfo>.LoadedCount();
             for (var i = 0u; i < prefabCount; i++) {
                 var prefab = PrefabCollection<BuildingInfo>.GetLoaded(i);
-                if(prefab != null) prefab.m_hasLodData = false;
+                if (prefab != null) prefab.m_hasLodData = false;
             }
             BuildingManager.instance.InitRenderData();
+
+            // Colors
+            BuildingManager.instance.UpdateBuildingColors();
         }
     }
 
