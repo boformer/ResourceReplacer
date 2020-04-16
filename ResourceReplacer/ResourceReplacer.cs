@@ -176,7 +176,6 @@ namespace ResourceReplacer {
             }
 
             for (int i = 0; i < prefab.m_cellSurfaces.Length; i++) {
-                Debug.Log(Enum.GetName(typeof(TerrainModify.Surface), prefab.m_cellSurfaces[i]));
                 prefab.m_cellSurfaces[i] = TerrainModify.Surface.None;
             }
 
@@ -216,7 +215,6 @@ namespace ResourceReplacer {
             {
                 if (BuildingManager.instance.m_buildings.m_buffer[i].Info == prefab)
                 {
-                    Debug.Log("Updating terrain...");
                     BuildingManager.instance.m_buildings.m_buffer[i].UpdateTerrain(false, true);
                 }
             }
