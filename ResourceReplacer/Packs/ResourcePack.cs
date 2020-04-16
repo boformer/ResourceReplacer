@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace ResourceReplacer.Pack {
+namespace ResourceReplacer.Packs {
     public abstract class ResourcePack {
         public abstract string Path { get; set; }
         public abstract Texture2D GetBuildingTexture(string textureName);

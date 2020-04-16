@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using ColossalFramework.UI;
-using ResourceReplacer.Pack;
+using ResourceReplacer.Packs;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

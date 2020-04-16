@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ColossalFramework.IO;
-using ResourceReplacer.Pack;
 using ResourceReplacer.Packs;
 using UnityEngine;
 

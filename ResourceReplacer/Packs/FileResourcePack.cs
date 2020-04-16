@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
-using ResourceReplacer.Pack;
 using UnityEngine;
 
 namespace ResourceReplacer.Packs {
