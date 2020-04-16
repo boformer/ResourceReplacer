@@ -40,5 +40,17 @@ namespace ResourceReplacer.Editor {
 
             return colorField;
         }
+
+        public static UICheckBox AddCheckBox(UIComponent parent, string text)
+        {
+            var checkboxTemplate = UITemplateManager.GetAsGameObject("OptionsCheckBoxTemplate");
+            var checkbox = parent.AttachUIComponent(checkboxTemplate) as UICheckBox;
+            checkbox.text = text;
+            checkbox.width = 40f;
+            checkbox.height = 25f;
+            checkbox.enabled = true;
+            checkbox.isChecked = true;
+            return checkbox;
+        }
     }
 }

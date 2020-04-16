@@ -15,6 +15,7 @@ namespace ResourceReplacer {
 
         private readonly Dictionary<string, ResourcePack.PrefabColors> _originalBuildingColors = new Dictionary<string, ResourcePack.PrefabColors>();
 
+        private readonly Dictionary<string, TerrainModify.Surface[]> _originalBuildingSurfaces = new Dictionary<string, TerrainModify.Surface[]>();
 
         #region Textures
         public void ReplaceAllBuildingTextures() {
@@ -162,6 +163,62 @@ namespace ResourceReplacer {
             if (prefab == null) return;
             if (_originalBuildingColors.TryGetValue(prefab.name, out var colors)) {
                 colors.Apply(prefab);
+            }
+        }
+        #endregion
+
+        #region Surfaces
+        public void RemoveBuildingSurfaces(BuildingInfo prefab) {
+            if (prefab == null) return;
+
+            if (!_originalBuildingSurfaces.ContainsKey(prefab.name)) {
+                _originalBuildingSurfaces[prefab.name] = CopySurfaces(prefab.m_cellSurfaces);
+            }
+
+            for (int i = 0; i < prefab.m_cellSurfaces.Length; i++) {
+                Debug.Log(Enum.GetName(typeof(TerrainModify.Surface), prefab.m_cellSurfaces[i]));
+                prefab.m_cellSurfaces[i] = TerrainModify.Surface.None;
+            }
+
+            UpdateTerrainOfAllInstances(prefab);
+        }
+
+        public void RestoreBuildingSurfaces(BuildingInfo prefab) {
+            if (prefab == null) return;
+            if (_originalBuildingSurfaces.TryGetValue(prefab.name, out var surfaces)) {
+                for (int i = 0; i < surfaces.Length; i++) {
+                    prefab.m_cellSurfaces[i] = surfaces[i];
+                }
+
+                _originalBuildingSurfaces.Remove(prefab.name);
+                //removal is necessary since the dictionary entries are abused to save the state 
+                //if the surfaces for a building were already removed or not
+            }
+
+            UpdateTerrainOfAllInstances(prefab);
+        }
+
+        public bool AreSurfacesEnabled(BuildingInfo prefab) {
+            return !_originalBuildingSurfaces.ContainsKey(prefab.name);
+        }
+
+        private TerrainModify.Surface[] CopySurfaces(TerrainModify.Surface[] surfaces) {
+            var result = new TerrainModify.Surface[surfaces.Length];
+            for (int i = 0; i < surfaces.Length; i++) {
+                result[i] = surfaces[i];
+            }
+            return result;
+        }
+
+        private void UpdateTerrainOfAllInstances(BuildingInfo prefab)
+        {
+            for (int i = 0; i < BuildingManager.instance.m_buildings.m_size; i++)
+            {
+                if (BuildingManager.instance.m_buildings.m_buffer[i].Info == prefab)
+                {
+                    Debug.Log("Updating terrain...");
+                    BuildingManager.instance.m_buildings.m_buffer[i].UpdateTerrain(false, true);
+                }
             }
         }
         #endregion
