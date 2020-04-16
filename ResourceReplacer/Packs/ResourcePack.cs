@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ResourceReplacer.Packs {
@@ -62,11 +63,15 @@ namespace ResourceReplacer.Packs {
                 }
             }
             public bool Equals(PrefabColors other) {
-                return UseColorVariations == other.UseColorVariations && Color0.Equals(other.Color0) && Color1.Equals(other.Color1) && Color2.Equals(other.Color2) && Color3.Equals(other.Color3);
+                return UseColorVariations == other.UseColorVariations
+                    && EqualityComparer<Color>.Default.Equals(Color0, other.Color0)
+                    && EqualityComparer<Color>.Default.Equals(Color1, other.Color1)
+                    && EqualityComparer<Color>.Default.Equals(Color2, other.Color2)
+                    && EqualityComparer<Color>.Default.Equals(Color3, other.Color3);
             }
 
             public override string ToString() {
-                return $"{nameof(UseColorVariations)}: {UseColorVariations}, {nameof(Color0)}: {Color0}, {nameof(Color1)}: {Color1}, {nameof(Color2)}: {Color2}, {nameof(Color3)}: {Color3}";
+                return $"{nameof(UseColorVariations)}: {UseColorVariations.ToString()}, {nameof(Color0)}: {Color0.ToString()}, {nameof(Color1)}: {Color1.ToString()}, {nameof(Color2)}: {Color2.ToString()}, {nameof(Color3)}: {Color3.ToString()}";
             }
         }
     }
