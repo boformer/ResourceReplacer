@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FileResourcePack xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="Dev Pack">
+  <BuildingColors>
+    <Building Name="L1 3x4 Detached08">
+      <Color0 r="129" g="107" b="97" a="255" />
+      <Color1 r="73" g="73" b="73" a="255" />
+      <Color2 r="139" g="139" b="139" a="255" />
+      <Color3 r="94" g="77" b="65" a="255" />
+    </Building>
+  </BuildingColors>
+</FileResourcePack>
