@@ -133,5 +133,17 @@
       <Color2 r="150" g="134" b="116" a="255" />
       <Color3 r="158" g="128" b="93" a="255" />
     </Building>
+    <Building Name="H1_2x2_Blockhouse">
+      <Color0 r="255" g="255" b="255" a="255" />
+      <Color1 r="177" g="161" b="149" a="255" />
+      <Color2 r="255" g="195" b="162" a="255" />
+      <Color3 r="166" g="164" b="164" a="255" />
+    </Building>
+    <Building Name="H1_3x2_Blockhouse">
+      <Color0 r="254" g="254" b="254" a="255" />
+      <Color1 r="207" g="172" b="140" a="255" />
+      <Color2 r="177" g="158" b="150" a="255" />
+      <Color3 r="107" g="121" b="131" a="255" />
+    </Building>
   </BuildingColors>
 </FileResourcePack>
