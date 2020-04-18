@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using ColossalFramework.UI;
-using ResourceReplacer.Pack;
+using ResourceReplacer.Packs;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,10 +10,14 @@ namespace ResourceReplacer.Editor {
         private const string PanelName = "BuildingConfigPanel";
         private const float PanelHeight = 5 + 25 + 5 + 25 + 5;
 
+        private BuildingInfo previousPrefabSelection = null;
+        private BuildingInfo currentPrefabSelection = null;
+
         private UIColorField colorPicker0;
         private UIColorField colorPicker1;
         private UIColorField colorPicker2;
         private UIColorField colorPicker3;
+        private UICheckBox surfacesEnabledCheckBox;
         private bool ignoreEvents = false;
 
         public static void Install() {
@@ -67,6 +71,9 @@ namespace ResourceReplacer.Editor {
             var dumpAciButton = UIUtils.AddButton(textureRow, "Dump ACI");
             dumpAciButton.eventClick += (comp, ev) => DumpTexture("_ACIMap");
 
+            surfacesEnabledCheckBox = UIUtils.AddCheckBox(textureRow, "Surface");
+            surfacesEnabledCheckBox.eventCheckChanged += (comp, val) => UpdateSurface(val);
+
             var colorRow = AddUIComponent<UIPanel>();
             colorRow.autoLayout = true;
             colorRow.autoLayoutDirection = LayoutDirection.Horizontal;
@@ -104,14 +111,21 @@ namespace ResourceReplacer.Editor {
         public override void Update() {
             base.Update();
 
-            var prefab = GetSelectedPrefab();
-            if (prefab != null) {
+            currentPrefabSelection = GetSelectedPrefab();
+            var selectionChanged = currentPrefabSelection != previousPrefabSelection;
+            if (currentPrefabSelection != null && selectionChanged) {
                 ignoreEvents = true;
-                colorPicker0.selectedColor = prefab.m_color0;
-                colorPicker1.selectedColor = prefab.m_color1;
-                colorPicker2.selectedColor = prefab.m_color2;
-                colorPicker3.selectedColor = prefab.m_color3;
+
+                colorPicker0.selectedColor = currentPrefabSelection.m_color0;
+                colorPicker1.selectedColor = currentPrefabSelection.m_color1;
+                colorPicker2.selectedColor = currentPrefabSelection.m_color2;
+                colorPicker3.selectedColor = currentPrefabSelection.m_color3;
+
+                surfacesEnabledCheckBox.isChecked = ResourceReplacer.instance.AreSurfacesEnabled(currentPrefabSelection);
+
                 ignoreEvents = false;
+
+                previousPrefabSelection = currentPrefabSelection;
             }
         }
 
@@ -204,6 +218,21 @@ namespace ResourceReplacer.Editor {
 
             ResourceReplacer.instance.RestoreBuildingColors(prefab);
             BuildingManager.instance.UpdateBuildingColors();
+        }
+
+        private static void UpdateSurface(bool showSurface)
+        {
+            var prefab = GetSelectedPrefab();
+            if (prefab == null) return;
+
+            if (showSurface)
+            {
+                ResourceReplacer.instance.RestoreBuildingSurfaces(prefab);
+            }
+            else
+            {
+                ResourceReplacer.instance.RemoveBuildingSurfaces(prefab);
+            }
         }
 
         private static BuildingInfo GetSelectedPrefab() {

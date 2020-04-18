@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
-using ResourceReplacer.Pack;
 using UnityEngine;
 
 namespace ResourceReplacer.Packs {
@@ -53,7 +52,7 @@ namespace ResourceReplacer.Packs {
                     Color2 = item.Color2 ?? UnityEngine.Color.white,
                     Color3 = item.Color3 ?? UnityEngine.Color.white
                 };
-                UnityEngine.Debug.Log(colors);
+                UnityEngine.Debug.Log(colors.ToString());
                 return true;
             } else {
                 colors = default;
