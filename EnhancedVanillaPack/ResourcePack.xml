@@ -19,5 +19,17 @@
       <Color2 r="167" g="103" b="75" a="255" />
       <Color3 r="66" g="66" b="66" a="255" />
     </Building>
+    <Building Name="L2 3x3 Detached10">
+      <Color0 r="167" g="157" b="136" a="255" />
+      <Color1 r="143" g="167" b="178" a="255" />
+      <Color2 r="163" g="135" b="135" a="255" />
+      <Color3 r="254" g="254" b="254" a="255" />
+    </Building>
+    <Building Name="L3_3x4_Detached_10">
+      <Color0 r="110" g="140" b="153" a="255" />
+      <Color1 r="65" g="98" b="106" a="255" />
+      <Color2 r="134" g="134" b="134" a="255" />
+      <Color3 r="186" g="186" b="186" a="255" />
+    </Building>
   </BuildingColors>
 </FileResourcePack>
