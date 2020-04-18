@@ -15,7 +15,7 @@ namespace ResourceReplacer {
 
         private readonly Dictionary<string, ResourcePack.PrefabColors> _originalBuildingColors = new Dictionary<string, ResourcePack.PrefabColors>();
 
-        private readonly Dictionary<string, TerrainModify.Surface[]> _originalBuildingSurfaces = new Dictionary<string, TerrainModify.Surface[]>();
+        private readonly Dictionary<string, SurfaceConfig> _originalBuildingSurfaces = new Dictionary<string, SurfaceConfig>();
 
         #region Textures
         public void ReplaceAllBuildingTextures() {
@@ -172,12 +172,13 @@ namespace ResourceReplacer {
             if (prefab == null) return;
 
             if (!_originalBuildingSurfaces.ContainsKey(prefab.name)) {
-                _originalBuildingSurfaces[prefab.name] = CopySurfaces(prefab.m_cellSurfaces);
+                _originalBuildingSurfaces[prefab.name] = SurfaceConfig.From(prefab);
             }
 
-            for (int i = 0; i < prefab.m_cellSurfaces.Length; i++) {
-                prefab.m_cellSurfaces[i] = TerrainModify.Surface.None;
-            }
+            prefab.m_weakTerrainRuining = true; // reduces dirt around buildings
+            prefab.m_pavementAreas = new Vector2[0];
+            prefab.m_cellSurfaces = null;
+            prefab.EnsureCellSurface();
 
             UpdateTerrainOfAllInstances(prefab);
         }
@@ -185,10 +186,7 @@ namespace ResourceReplacer {
         public void RestoreBuildingSurfaces(BuildingInfo prefab) {
             if (prefab == null) return;
             if (_originalBuildingSurfaces.TryGetValue(prefab.name, out var surfaces)) {
-                for (int i = 0; i < surfaces.Length; i++) {
-                    prefab.m_cellSurfaces[i] = surfaces[i];
-                }
-
+                surfaces.Apply(prefab);
                 _originalBuildingSurfaces.Remove(prefab.name);
                 //removal is necessary since the dictionary entries are abused to save the state 
                 //if the surfaces for a building were already removed or not
@@ -258,6 +256,32 @@ namespace ResourceReplacer {
             public override int GetHashCode()
             {
                 return (Path.GetHashCode() * 397) ^ Name.GetHashCode();
+            }
+        }
+
+        private struct SurfaceConfig {
+            public bool fullPavement;
+            public bool fullGravel;
+            public bool weakTerrainRuining;
+            public TerrainModify.Surface[] cellSurfaces;
+            public Vector2[] pavementAreas;
+
+            public void Apply(BuildingInfo prefab) {
+                prefab.m_fullPavement = fullPavement;
+                prefab.m_fullGravel = fullGravel;
+                prefab.m_weakTerrainRuining = weakTerrainRuining;
+                prefab.m_cellSurfaces = cellSurfaces;
+                prefab.m_pavementAreas = pavementAreas;
+            }
+
+            public static SurfaceConfig From(BuildingInfo prefab) {
+                return new SurfaceConfig() {
+                    fullPavement = prefab.m_fullPavement,
+                    fullGravel = prefab.m_fullGravel,
+                    weakTerrainRuining = prefab.m_weakTerrainRuining,
+                    cellSurfaces = prefab.m_cellSurfaces,
+                    pavementAreas = prefab.m_pavementAreas
+                };
             }
         }
     }
