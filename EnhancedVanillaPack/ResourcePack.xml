@@ -109,5 +109,29 @@
       <Color2 r="183" g="173" b="170" a="255" />
       <Color3 r="254" g="254" b="254" a="255" />
     </Building>
+    <Building Name="L3 1x1 Detached14">
+      <Color0 r="108" g="108" b="108" a="255" />
+      <Color1 r="65" g="97" b="104" a="255" />
+      <Color2 r="80" g="72" b="62" a="255" />
+      <Color3 r="161" g="160" b="122" a="255" />
+    </Building>
+    <Building Name="L5 4x4 Villa08a">
+      <Color0 r="193" g="185" b="181" a="255" />
+      <Color1 r="101" g="85" b="71" a="255" />
+      <Color2 r="95" g="95" b="95" a="255" />
+      <Color3 r="255" g="255" b="255" a="255" />
+    </Building>
+    <Building Name="L5 4x4 Villa03">
+      <Color0 r="68" g="68" b="68" a="255" />
+      <Color1 r="159" g="127" b="117" a="255" />
+      <Color2 r="213" g="213" b="213" a="255" />
+      <Color3 r="185" g="179" b="165" a="255" />
+    </Building>
+    <Building Name="L1_1x1_detached_13">
+      <Color0 r="213" g="213" b="213" a="255" />
+      <Color1 r="203" g="184" b="171" a="255" />
+      <Color2 r="150" g="134" b="116" a="255" />
+      <Color3 r="158" g="128" b="93" a="255" />
+    </Building>
   </BuildingColors>
 </FileResourcePack>
