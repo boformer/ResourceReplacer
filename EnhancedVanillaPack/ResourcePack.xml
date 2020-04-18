@@ -58,7 +58,7 @@
     <Building Name="L2 4x3 Detached07">
       <Color0 r="99" g="84" b="65" a="255" />
       <Color1 r="147" g="100" b="85" a="255" />
-      <Color2 r="128" g="110" b="100" a="255" />
+      <Color2 r="74" g="78" b="81" a="255" />
       <Color3 r="213" g="146" b="117" a="255" />
     </Building>
     <Building Name="L3 2x2 Detached12">
@@ -68,16 +68,46 @@
       <Color3 r="147" g="165" b="176" a="255" />
     </Building>
     <Building Name="L3 4x3 Detached09">
-      <Color0 r="112" g="107" b="107" a="255" />
-      <Color1 r="101" g="93" b="78" a="255" />
-      <Color2 r="161" g="117" b="97" a="255" />
-      <Color3 r="180" g="164" b="141" a="255" />
+      <Color0 r="140" g="134" b="134" a="255" />
+      <Color1 r="118" g="107" b="92" a="255" />
+      <Color2 r="218" g="157" b="131" a="255" />
+      <Color3 r="211" g="189" b="163" a="255" />
     </Building>
     <Building Name="L4 4x4 Villa12">
       <Color0 r="69" g="69" b="69" a="255" />
       <Color1 r="124" g="91" b="78" a="255" />
       <Color2 r="162" g="108" b="84" a="255" />
       <Color3 r="69" g="63" b="54" a="255" />
+    </Building>
+    <Building Name="L3 2x3 Detached11">
+      <Color0 r="118" g="104" b="87" a="255" />
+      <Color1 r="175" g="191" b="206" a="255" />
+      <Color2 r="201" g="177" b="140" a="255" />
+      <Color3 r="255" g="255" b="255" a="255" />
+    </Building>
+    <Building Name="L2 3x4 Detached06">
+      <Color0 r="99" g="99" b="99" a="255" />
+      <Color1 r="174" g="119" b="95" a="255" />
+      <Color2 r="99" g="81" b="73" a="255" />
+      <Color3 r="144" g="144" b="144" a="255" />
+    </Building>
+    <Building Name="L2 1x2 Detached12">
+      <Color0 r="255" g="255" b="255" a="255" />
+      <Color1 r="199" g="180" b="132" a="255" />
+      <Color2 r="167" g="136" b="139" a="255" />
+      <Color3 r="105" g="95" b="91" a="255" />
+    </Building>
+    <Building Name="L5 4x3 Villa11">
+      <Color0 r="117" g="117" b="117" a="255" />
+      <Color1 r="241" g="162" b="128" a="255" />
+      <Color2 r="185" g="123" b="104" a="255" />
+      <Color3 r="159" g="118" b="104" a="255" />
+    </Building>
+    <Building Name="L2 4x3 Detached11">
+      <Color0 r="123" g="123" b="123" a="255" />
+      <Color1 r="255" g="238" b="194" a="255" />
+      <Color2 r="183" g="173" b="170" a="255" />
+      <Color3 r="254" g="254" b="254" a="255" />
     </Building>
   </BuildingColors>
 </FileResourcePack>
