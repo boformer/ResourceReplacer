@@ -2,10 +2,22 @@
 <FileResourcePack xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="Dev Pack">
   <BuildingColors>
     <Building Name="L1 3x4 Detached08">
-      <Color0 r="129" g="107" b="97" a="255" />
+      <Color0 r="117" g="84" b="70" a="255" />
       <Color1 r="73" g="73" b="73" a="255" />
       <Color2 r="139" g="139" b="139" a="255" />
       <Color3 r="94" g="77" b="65" a="255" />
+    </Building>
+    <Building Name="L1 2x2 Detached10">
+      <Color0 r="196" g="196" b="196" a="255" />
+      <Color1 r="179" g="202" b="206" a="255" />
+      <Color2 r="137" g="131" b="128" a="255" />
+      <Color3 r="207" g="166" b="137" a="255" />
+    </Building>
+    <Building Name="L5_4x3_Villa13">
+      <Color0 r="146" g="109" b="83" a="255" />
+      <Color1 r="203" g="164" b="147" a="255" />
+      <Color2 r="167" g="103" b="75" a="255" />
+      <Color3 r="66" g="66" b="66" a="255" />
     </Building>
   </BuildingColors>
 </FileResourcePack>
